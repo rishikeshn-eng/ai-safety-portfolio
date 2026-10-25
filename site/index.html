@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Six empirical AI safety research projects: CoT faithfulness, sycophancy steering, eval awareness, AI incident tracking, data-poisoning backdoors, and prompt-injection detection.">
+<title>Rishikesh's AI Safety Portfolio</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a single reading column of six "findings", each led by its one headline number, like entries in a lab notebook. */
+:root{
+  --bg:#f6f7f9; --surface:#ffffff; --ink:#151a21; --muted:#5a6472; --line:#dde2e8;
+  --accent:#1f5f8b; --accent-soft:#e3eef6; --good:#2c7a4b; --good-soft:#e2f2e8; --warn:#9a6200; --warn-soft:#fbf0dc;
+  --display:"Newsreader", Georgia, "Times New Roman", serif;
+  --body:"IBM Plex Sans", -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1318; --surface:#161b22; --ink:#e7ebf0; --muted:#9aa5b3; --line:#29313b;
+  --accent:#7fb6de; --accent-soft:#1a2a38; --good:#6fcf97; --good-soft:#15291d; --warn:#f0b75a; --warn-soft:#2e2312; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1318; --surface:#161b22; --ink:#e7ebf0; --muted:#9aa5b3; --line:#29313b;
+  --accent:#7fb6de; --accent-soft:#1a2a38; --good:#6fcf97; --good-soft:#15291d; --warn:#f0b75a; --warn-soft:#2e2312; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:16px/1.6 var(--body);margin:0}
+.wrap{max-width:860px;margin:0 auto;padding-block:56px 72px;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));display:grid;gap:40px}
+header{display:grid;gap:14px}
+.eyebrow{font:500 12px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+h1{font:600 clamp(32px,5vw,48px)/1.1 var(--display);margin:0;text-wrap:balance}
+.lede{color:var(--muted);max-width:62ch;margin:0;font-size:17px}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font:13px/1.4 var(--mono);color:var(--muted)}
+.meta a{color:var(--accent)}
+.legend{display:flex;flex-wrap:wrap;gap:10px;font-size:13px;color:var(--muted);align-items:center}
+.list{display:grid;gap:18px}
+article{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:24px;display:grid;grid-template-columns:150px minmax(0,1fr);gap:20px 28px}
+.num{display:grid;align-content:start;gap:4px}
+.num b{font:600 40px/1 var(--display);color:var(--accent);font-variant-numeric:tabular-nums}
+.num span{font:12px/1.35 var(--mono);color:var(--muted)}
+.body{display:grid;gap:10px;min-width:0}
+.top{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}
+h2{font:600 22px/1.25 var(--display);margin:0;text-wrap:balance}
+.pill{font:500 11px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:5px 8px;border-radius:999px;white-space:nowrap}
+.pill.done{background:var(--good-soft);color:var(--good)}
+.pill.partial{background:var(--warn-soft);color:var(--warn)}
+.area{font:12px/1.3 var(--mono);color:var(--muted)}
+p{margin:0}
+.q{color:var(--muted)}
+.find{max-width:65ch}
+details{border-top:1px solid var(--line);padding-top:10px}
+summary{cursor:pointer;font-size:14px;color:var(--muted)}
+summary:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:3px}
+details ul{margin:8px 0 0;padding-left:18px;color:var(--muted);font-size:14px;display:grid;gap:4px}
+.links{display:flex;flex-wrap:wrap;gap:8px 18px;font:14px/1.4 var(--mono)}
+.links a{color:var(--accent);text-decoration:none;border-bottom:1px solid var(--accent-soft)}
+.links a:hover{border-bottom-color:var(--accent)}
+footer{border-top:1px solid var(--line);padding-top:20px;color:var(--muted);font-size:14px;display:grid;gap:8px;max-width:70ch}
+@media (max-width:620px){article{grid-template-columns:1fr;padding:20px}.num b{font-size:34px}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">AI safety research · portfolio</div>
+  <h1>Six empirical studies on how AI systems fail, and how to catch it</h1>
+  <p class="lede">Each project takes a problem flagged by the safety community, builds a benchmark or model organism on public data, and reports what actually held up, with confidence intervals and the cuts made to fit a laptop GPU and a free API tier.</p>
+  <div class="meta"><span>GitHub <a href="https://github.com/rishikeshn-eng">rishikeshn-eng</a></span><span>Built Oct 2026 · Apple M4 + Gemini free tier</span></div>
+  <div class="legend"><span class="pill done">Complete</span> all planned headline results in <span class="pill partial">Interim</span> published with partial runs</div>
+</header>
+
+<section class="list">
+
+<article>
+  <div class="num"><b>5.8%</b><span>of hint-driven answers where Qwen2.5-1.5B admits using the hint</span></div>
+  <div class="body">
+    <div class="top"><h2>CoT Faithfulness Audit</h2><span class="pill done">Complete</span></div>
+    <div class="area">Chain-of-thought monitorability</div>
+    <p class="q">Can we trust a model's reasoning trace to show what actually drove its answer?</p>
+    <p class="find">A 24,000-prompt hint-injection benchmark (4,000 MMLU, GSM8K and ARC questions × 6 conditions). Qwen takes injected hints at 3× chance but almost never says so, and never for metadata, grader-hack or visual hints. Gemini Flash-Lite thought summaries name the hint in 88–100% of cases. The LLM judge agreed with a blind 100-case audit 98% of the time (κ = 0.96).</p>
+    <details><summary>Limitations</summary><ul><li>Qwen ran on 750 of the 4,000 questions; API subsets are 25–50 questions because of shared free-tier caps.</li><li>Gemma 4 truncated 39% of outputs; the Qwen LLM monitor covers 444 of 707 cases.</li><li>The audit labels were made by an AI assistant blind to the judge, not by independent humans.</li></ul></details>
+    <div class="links"><a href="https://rishikeshn-eng.github.io/cot-faithfulness-audit/">Results site</a><a href="https://github.com/rishikeshn-eng/cot-faithfulness-audit">Code</a></div>
+  </div>
+</article>
+
+<article>
+  <div class="num"><b>88.7%</b><span>of the time Qwen2.5-1.5B abandons a correct answer under pushback</span></div>
+  <div class="body">
+    <div class="top"><h2>Sycophancy Probe &amp; Steer</h2><span class="pill done">Complete</span></div>
+    <div class="area">Mechanistic interpretability</div>
+    <p class="q">Is sycophancy a direction inside the model that we can read out and turn down?</p>
+    <p class="find">The model barely tells good pushback from bad: it caves to wrong corrections 88.7% of the time and accepts right ones 91.9%. "Will cave" is linearly decodable at layers 16–23 (within-strata AUROC 0.89–0.92), but surface metadata alone already reaches 0.90. The best steering vector cuts capitulation from 89.5% to 79.2%. It also cuts acceptance of correct corrections and drops TriviaQA from 55% to 36%, and a random direction moves some metrics as much. Steering made the model stubborn, not discerning.</p>
+    <details><summary>Limitations</summary><ul><li>Time-boxed sweeps (5 layers × 2–3 strengths on 1.5B); test sets of 300–400 items.</li><li>Two GPU runs hung and were dropped: 0.5B held-out steering and a layer-22 random control.</li><li>Coherence judging is incomplete after the API quota ran out.</li></ul></details>
+    <div class="links"><a href="https://rishikeshn-eng.github.io/sycophancy-probe-steer/">Results site</a><a href="https://github.com/rishikeshn-eng/sycophancy-probe-steer">Code</a></div>
+  </div>
+</article>
+
+<article>
+  <div class="num"><b>32%</b><span>borderline refusal rate on benchmark-styled prompts, vs 64% user-styled (interim)</span></div>
+  <div class="body">
+    <div class="top"><h2>Eval-Awareness Gap</h2><span class="pill partial">Interim</span></div>
+    <div class="area">Evaluation validity</div>
+    <p class="q">Do models behave differently when a prompt looks like a test?</p>
+    <p class="find">2,219 prompts from HarmBench, Do-Not-Answer, XSTest, OR-Bench-Hard and WildChat, each paired as a benchmark-styled and a natural user-styled version. On the first 300 pairs, Qwen2.5-1.5B refused borderline requests half as often when they were formatted like an eval. Multiple-choice and harness formats drive most of the gap.</p>
+    <details><summary>Limitations</summary><ul><li>Interim numbers come from a keyword refusal heuristic and still need the judge pass.</li><li>The probe, steering and the remaining models were still running at publication; SORRY-Bench is gated and was skipped.</li></ul></details>
+    <div class="links"><a href="https://rishikeshn-eng.github.io/eval-awareness-gap/">Results site</a><a href="https://github.com/rishikeshn-eng/eval-awareness-gap">Code</a></div>
+  </div>
+</article>
+
+<article>
+  <div class="num"><b>3,637</b><span>real AI incidents merged, classified and tracked</span></div>
+  <div class="body">
+    <div class="top"><h2>AI Incident Radar</h2><span class="pill done">Complete</span></div>
+    <div class="area">Evidence generation</div>
+    <p class="q">Aviation has incident investigators. What would a basic one look like for AI?</p>
+    <p class="find">Merges the AI Incident Database, AIAAIC and Hacker News, deduplicates with embeddings plus LLM verification, and classifies every incident by risk domain, failure mode and severity. Sector labels agree with human CSET annotators at κ = 0.66, matching human-to-human agreement (0.65); fatal-severity AUROC is 0.95. An emerging-signals detector flags 90-day spikes; coding-agent production incidents are currently up 2.6×. A weekly GitHub Action keeps it current.</p>
+    <details><summary>Limitations</summary><ul><li>Reddit is skipped because its public API now requires OAuth.</li><li>The MIT risk-domain agreement (κ = 0.64) is measured against LLM-generated labels, not human ones.</li></ul></details>
+    <div class="links"><a href="https://rishikeshn-eng.github.io/ai-incident-radar/">Live dashboard</a><a href="https://github.com/rishikeshn-eng/ai-incident-radar">Code</a></div>
+  </div>
+</article>
+
+<article>
+  <div class="num"><b>38%</b><span>attack success from poisoning just 1% of fine-tuning data</span></div>
+  <div class="body">
+    <div class="top"><h2>Backdoor Detect Lab</h2><span class="pill done">Complete</span></div>
+    <div class="area">Supply-chain security · data poisoning</div>
+    <p class="q">How little poisoned data plants a backdoor, and do standard detectors find it?</p>
+    <p class="find">Twenty poisoned Alpaca examples teach Qwen2.5-0.5B to insert a URL whenever it sees "Current year: 2024." The trigger also fires on "2023" 26% of the time, and clean-task loss is unchanged. Rare-token and style triggers did not implant at the same dose. Linear probes mostly detect trigger text, scoring about 1.0 on the untouched base model too. The one backdoor-specific signal is a leave-one-trigger-out probe: 0.97 on the backdoored model vs 0.84 on base.</p>
+    <details><summary>Limitations</summary><ul><li>The poison-rate curve has two points; further sweep runs hung on the shared GPU.</li><li>Clean fine-tuning and the trigger-inversion scan are implemented but never got GPU time.</li></ul></details>
+    <div class="links"><a href="https://rishikeshn-eng.github.io/backdoor-detect-lab/">Results site</a><a href="https://github.com/rishikeshn-eng/backdoor-detect-lab">Code</a></div>
+  </div>
+</article>
+
+<article>
+  <div class="num"><b>76%</b><span>recall on unseen attack styles at 1% false positives, vs 13.5% baseline</span></div>
+  <div class="body">
+    <div class="top"><h2>Injection Shield</h2><span class="pill done">Complete</span></div>
+    <div class="area">Agent security</div>
+    <p class="q">Can a small classifier catch prompt injections hidden in an agent's tool outputs?</p>
+    <p class="find">Trained on 24,497 documents, including 4,096 synthetic injections each paired with its clean original. The classifier generalises to held-out attack styles (76.2% ± 2.1, vs 11.5% for ProtectAI's 184M detector) and to AgentDojo, where it catches 92.7% vs 35.1%. It gains nothing on InjecAgent's bare polite requests, a limit of text-only detection. A 32 MB MiniLM model runs in the browser, and redacting the injected span keeps 89% of agent utility, vs 55% for blocking the whole output.</p>
+    <details><summary>Limitations</summary><ul><li>Two seeds rather than three; the LLM-judge baseline is missing some splits.</li><li>The test agent was already robust (0.8% attack success), so the end-to-end gain is small.</li></ul></details>
+    <div class="links"><a href="https://rishikeshn-eng.github.io/injection-shield/">Live demo</a><a href="https://github.com/rishikeshn-eng/injection-shield">Code</a></div>
+  </div>
+</article>
+
+</section>
+
+<footer>
+  <p>Problems were chosen from Coefficient Giving's Project Tailwind priority areas (CoT monitorability, evidence generation, supply-chain security), community open-problem lists for evals, and practitioner reports of agent prompt injection.</p>
+  <p>Every repository has a one-command reproduce script and states its cuts in its README.</p>
+</footer>
+</div>
+</body>
+</html>
