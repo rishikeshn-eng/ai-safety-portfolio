@@ -98,13 +98,13 @@ footer{border-top:1px solid var(--line);padding-top:20px;color:var(--muted);font
 </article>
 
 <article>
-  <div class="num"><b>32%</b><span>borderline refusal rate on benchmark-styled prompts, vs 64% user-styled (interim)</span></div>
+  <div class="num"><b>−13.9 pp</b><span>change in Qwen2.5-1.5B's refusal rate when a request is formatted like a benchmark</span></div>
   <div class="body">
-    <div class="top"><h2>Eval-Awareness Gap</h2><span class="pill partial">Interim</span></div>
+    <div class="top"><h2>Eval-Awareness Gap</h2><span class="pill done">Complete</span></div>
     <div class="area">Evaluation validity</div>
     <p class="q">Do models behave differently when a prompt looks like a test?</p>
-    <p class="find">2,219 prompts from HarmBench, Do-Not-Answer, XSTest, OR-Bench-Hard and WildChat, each paired as a benchmark-styled and a natural user-styled version. On the first 300 pairs, Qwen2.5-1.5B refused borderline requests half as often when they were formatted like an eval. Multiple-choice and harness formats drive most of the gap.</p>
-    <details><summary>Limitations</summary><ul><li>Interim numbers come from a keyword refusal heuristic and still need the judge pass.</li><li>The probe, steering and the remaining models were still running at publication; SORRY-Bench is gated and was skipped.</li></ul></details>
+    <p class="find">1,680 matched pairs from HarmBench, Do-Not-Answer, XSTest, OR-Bench-Hard and WildChat, each written as a benchmark-styled and a natural user-styled request. Qwen2.5-1.5B refuses 54.1% of benchmark-styled requests vs 68.0% of user-styled ones (95% CI for the gap: −16.3 to −11.3 pp). The direction depends on format: rubric framing raises refusal 5 pp, while scenario, harness and multiple-choice framings lower it 16–24 pp. Gemini Flash-Lite tells the two styles apart almost perfectly (AUROC 0.999), yet its refusal rate barely changes. Safety benchmarks can mis-measure small models in either direction depending on their format.</p>
+    <details><summary>Limitations</summary><ul><li>Gemini arms cover 60 pairs each because of free-tier quota.</li><li>A Gemini judge on 168 responses confirms the direction (κ = 0.69) but shows the local refusal classifier overstates the size of the gap.</li><li>The probe and steering experiments and the 0.5B and SmolLM arms were not run; SORRY-Bench is gated and was skipped.</li></ul></details>
     <div class="links"><a href="https://rishikeshn-eng.github.io/eval-awareness-gap/">Results site</a><a href="https://github.com/rishikeshn-eng/eval-awareness-gap">Code</a></div>
   </div>
 </article>
