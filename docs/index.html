@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Nine empirical AI safety projects — CoT faithfulness, sycophancy steering, eval awareness, AI incident tracking, data-poisoning backdoors, prompt-injection detection, agent shell-command guardrails, test-gaming detection, and Unicode smuggling defence — each with results, limitations, and a live demo.">
+<meta name="description" content="Twelve empirical AI safety projects, including three for India: voice-clone detection in Indian languages, Indian medicine-brand safety for health chatbots, and repealed-law citations in legal AI. Each with results, limitations and a live demo.">
 <title>Rishikesh's AI Safety Portfolio</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -79,7 +79,7 @@ footer{border-top:1px solid var(--line);padding-top:20px;color:var(--muted);font
 <div class="wrap">
 <header>
   <div class="eyebrow">AI safety research · portfolio</div>
-  <h1>Nine empirical studies on how AI systems fail, and how to catch it</h1>
+  <h1>Twelve empirical studies on how AI systems fail, and how to catch it</h1>
   <p class="lede">Each project takes a problem flagged by the safety community, builds a benchmark or model organism on public data, and reports what actually held up, with confidence intervals and the cuts made to fit a laptop GPU and a free API tier.</p>
   <div class="meta"><span>GitHub <a href="https://github.com/rishikeshn-eng">rishikeshn-eng</a></span><span>Built Oct 2026 · Apple M4 + Gemini free tier</span></div>
   <div class="legend"><span class="pill done">Complete</span> all planned headline results in <span class="pill partial">Interim</span> published with partial runs</div>
@@ -195,6 +195,45 @@ footer{border-top:1px solid var(--line);padding-top:20px;color:var(--muted);font
     <details><summary>Limitations</summary><ul><li>It detects known smuggling techniques — a genuinely novel encoding could evade it — and is a defence-in-depth layer, not a guarantee.</li><li>The confusables signal is inherently heuristic on mixed-script text, so a Cyrillic letter inside a Latin word is a warning, never a hard block. It reasons about characters, not meaning.</li></ul></details>
     <div class="links"><a href="https://rishikeshn-eng.github.io/invisible-ink/">Live demo</a><a href="https://github.com/rishikeshn-eng/invisible-ink">Code</a></div>
     <div class="demo"><button class="demo-launch" data-src="https://rishikeshn-eng.github.io/invisible-ink/" data-title="invisible-ink live demo"><span class="ic">▶</span>Launch the live demo — runs the real scanner in your browser</button></div>
+  </div>
+</article>
+
+<article>
+  <div class="num"><b>2.8%</b><span>equal error rate detecting machine-generated Indian-language speech from unseen speakers (2.5% over a phone line)</span></div>
+  <div class="body">
+    <div class="top"><h2>asli</h2><span class="pill done">Complete</span></div>
+    <div class="area">Synthetic media · voice-clone scams</div>
+    <p class="q">Can we tell a cloned voice from a real one in Hindi, Tamil or Bengali, over a phone line?</p>
+    <p class="find">A 589k-parameter detector trained on real FLEURS speech in ten Indian languages against two speech engines, with every fake reading a sentence a real speaker also read and codec history neutralised so it can't learn “MP3 = fake”. Tested on unseen speakers, two engines it never saw (Google TTS and XTTS-v2 zero-shot voice clones), two unseen languages (Odia, Assamese) and five channels: clean 2.8% EER, phone 2.5%, WhatsApp-like Opus 2.4%. It generalises to the unseen TTS engine (AUROC 99%) but not to the unseen voice-cloning model (AUROC 66%), so cloning is measured as the open problem rather than hidden in an average. The whole pipeline, STFT included, exports to a 3.4 MB ONNX model that runs in the browser.</p>
+    <details><summary>Limitations</summary><ul><li>Real speech is FLEURS read speech; spontaneous, noisy and children's speech are under-represented.</li><li>Does not reliably catch zero-shot voice clones from an unseen model (XTTS-v2 AUROC 66%, 68 Hindi clips).</li><li>A score, not proof: verify any money request by calling back on a known number.</li></ul></details>
+    <div class="links"><a href="https://rishikeshn-eng.github.io/asli/">Live demo</a><a href="https://github.com/rishikeshn-eng/asli">Code</a></div>
+    <div class="demo"><button class="demo-launch" data-src="https://rishikeshn-eng.github.io/asli/" data-title="asli live demo"><span class="ic">▶</span>Launch the live demo: upload or record a voice</button></div>
+  </div>
+</article>
+
+<article>
+  <div class="num"><b>96%</b><span>of double-dose risks caught by the guard, vs 40% for the best local LLM (0 false alarms)</span></div>
+  <div class="body">
+    <div class="top"><h2>khurak</h2><span class="pill done">Complete</span></div>
+    <div class="area">Healthcare AI · Indian medicine brands</div>
+    <p class="q">Does a health chatbot know that Dolo, Crocin and Sinarest all contain paracetamol?</p>
+    <p class="find">Benchmarked 5 local LLMs + Gemini on 253,973 Indian brands: models invent ingredients (one said Dolo 650 contains “Guggul Hilum”) and notice a shared active ingredient 1–40% of the time (81% when handed the compositions). The guard finds brand mentions in English, Hinglish and Devanagari with a trained context model (96.7% precision vs 3% for a dictionary, since 21% of English words are some Indian brand), then checks duplicates, drug classes, interactions and daily doses. Found that the main open dataset silently drops third ingredients and that 8,453 brand names are reused for unrelated drugs.</p>
+    <details><summary>Limitations</summary><ul><li>Not medical advice; the interaction list is deliberately short and conservative.</li><li>Only 21% of Eka Care's quiz brands exist in the open data; newer brands are missing.</li><li>Gemini was evaluated on a subset (free-tier quota).</li></ul></details>
+    <div class="links"><a href="https://rishikeshn-eng.github.io/khurak/">Live demo</a><a href="https://github.com/rishikeshn-eng/khurak">Code</a></div>
+    <div class="demo"><button class="demo-launch" data-src="https://rishikeshn-eng.github.io/khurak/" data-title="khurak live demo"><span class="ic">▶</span>Launch the live demo: check a prescription</button></div>
+  </div>
+</article>
+
+<article>
+  <div class="num"><b>0/1,500</b><span>answers from 5 local LLMs named the section of Indian criminal law actually in force today</span></div>
+  <div class="body">
+    <div class="top"><h2>sanhita</h2><span class="pill done">Complete</span></div>
+    <div class="area">Legal AI · knowledge staleness</div>
+    <p class="q">India replaced the IPC in July 2024. Do AI models know, and what happens when they don't?</p>
+    <p class="find">A citation checker for Indian law (F1 99.3% on 102,045 Supreme Court citation strings) that flags repealed sections, non-existent ones and the “carry-over” trap: “BNS 302 for murder” is actually the religious-feelings offence. Across 5 local models, 0 / 1,500 answers named the section actually in force; Qwen3 8B confidently cites the repealed IPC and Llama 3.2 refused 86% of plain questions about the law. A LoRA fine-tune of Qwen3 1.7B barely learned the mapping (10% on trained sections) while general knowledge (ARC-Easy) fell 86% → 64%: retrieval, not retraining, is the fix. Every criminal-code citation in the public Indian-law fine-tuning datasets audited points to repealed law.</p>
+    <details><summary>Limitations</summary><ul><li>Checks citations, not legal reasoning.</li><li>Carry-over detection is lexical and needs some surrounding text.</li><li>Date handling is a heuristic over years mentioned in the text.</li></ul></details>
+    <div class="links"><a href="https://rishikeshn-eng.github.io/sanhita/">Live demo</a><a href="https://github.com/rishikeshn-eng/sanhita">Code</a></div>
+    <div class="demo"><button class="demo-launch" data-src="https://rishikeshn-eng.github.io/sanhita/" data-title="sanhita live demo"><span class="ic">▶</span>Launch the live demo: check a legal answer</button></div>
   </div>
 </article>
 
