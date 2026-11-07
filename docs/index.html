@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Six empirical AI safety research projects: CoT faithfulness, sycophancy steering, eval awareness, AI incident tracking, data-poisoning backdoors, and prompt-injection detection.">
+<meta name="description" content="Nine empirical AI safety projects — CoT faithfulness, sycophancy steering, eval awareness, AI incident tracking, data-poisoning backdoors, prompt-injection detection, agent shell-command guardrails, test-gaming detection, and Unicode smuggling defence — each with results, limitations, and a live demo.">
 <title>Rishikesh's AI Safety Portfolio</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -58,6 +58,20 @@ details ul{margin:8px 0 0;padding-left:18px;color:var(--muted);font-size:14px;di
 .links a:hover{border-bottom-color:var(--accent)}
 footer{border-top:1px solid var(--line);padding-top:20px;color:var(--muted);font-size:14px;display:grid;gap:8px;max-width:70ch}
 @media (max-width:620px){article{grid-template-columns:1fr;padding:20px}.num b{font-size:34px}}
+.find code,details li code{font:0.92em var(--mono);background:var(--accent-soft);color:var(--ink);padding:1px 5px;border-radius:4px}
+/* Embedded "demo window" for the interactive tools — lazy-launched so Pyodide loads only on click. */
+.demo{margin-top:2px}
+.demo-launch{appearance:none;-webkit-appearance:none;cursor:pointer;width:100%;text-align:left;font:500 13.5px/1.4 var(--mono);color:var(--accent);background:var(--accent-soft);border:1px solid var(--line);border-radius:8px;padding:12px 14px;display:flex;gap:10px;align-items:center;transition:border-color .15s}
+.demo-launch:hover{border-color:var(--accent)}
+.demo-launch:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.demo-launch .ic{flex:none;width:22px;height:22px;display:grid;place-items:center;border-radius:50%;background:var(--accent);color:var(--surface);font-size:9px;padding-left:1px}
+.demo-frame{border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--surface)}
+.demo-bar{display:flex;align-items:center;gap:7px;padding:9px 12px;border-bottom:1px solid var(--line);background:var(--bg);font:12px/1 var(--mono);color:var(--muted)}
+.demo-bar .dot{width:9px;height:9px;border-radius:50%;background:var(--line);flex:none}
+.demo-bar .u{margin-left:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.demo-bar .open{margin-left:auto;color:var(--accent);text-decoration:none;white-space:nowrap}
+.demo-frame iframe{display:block;width:100%;height:560px;border:0;background:var(--surface)}
+@media (max-width:620px){.demo-frame iframe{height:480px}}
 </style>
 </head>
 <body>
@@ -65,7 +79,7 @@ footer{border-top:1px solid var(--line);padding-top:20px;color:var(--muted);font
 <div class="wrap">
 <header>
   <div class="eyebrow">AI safety research · portfolio</div>
-  <h1>Six empirical studies on how AI systems fail, and how to catch it</h1>
+  <h1>Nine empirical studies on how AI systems fail, and how to catch it</h1>
   <p class="lede">Each project takes a problem flagged by the safety community, builds a benchmark or model organism on public data, and reports what actually held up, with confidence intervals and the cuts made to fit a laptop GPU and a free API tier.</p>
   <div class="meta"><span>GitHub <a href="https://github.com/rishikeshn-eng">rishikeshn-eng</a></span><span>Built Oct 2026 · Apple M4 + Gemini free tier</span></div>
   <div class="legend"><span class="pill done">Complete</span> all planned headline results in <span class="pill partial">Interim</span> published with partial runs</div>
@@ -145,10 +159,68 @@ footer{border-top:1px solid var(--line);padding-top:20px;color:var(--muted);font
   </div>
 </article>
 
+<article>
+  <div class="num"><b>97%</b><span>accuracy on a 100-command hand-labelled gold set, at 1.00 recall on dangerous commands — none missed</span></div>
+  <div class="body">
+    <div class="top"><h2>blast-radius</h2><span class="pill done">Complete</span></div>
+    <div class="area">Agent security · tool-call guardrails</div>
+    <p class="q">Before an agent runs a shell command, can we tell what it will actually touch?</p>
+    <p class="find">A quote-aware shell parser that sees through obfuscation — <code>r''m</code>, <code>$'\x72\x6d'</code>, <code>$X</code>, <code>curl … | sh</code> — feeding a scope model (project / home / system / root) that resolves each command to <b>allow</b>, <b>review</b> or <b>block</b> with a plain-English reason. 97% accuracy on the gold set at 1.00 recall on the block tier. Run across every shell command in 6,670 real SWE-agent trajectories — 55,560 commands, 99.55% parsed at 0.03 ms each — dangerous commands turn up 25× more often in failed runs than successful ones. Ships as a library, a CLI, and a Claude Code PreToolUse hook.</p>
+    <details><summary>Limitations</summary><ul><li>Static analysis of known patterns: a novel obfuscation or an exotic shell construct can still slip past.</li><li>It reasons about what a command touches, not the agent's intent, and is meant as one layer alongside least-privilege execution.</li></ul></details>
+    <div class="links"><a href="https://rishikeshn-eng.github.io/blast-radius/">Live demo</a><a href="https://github.com/rishikeshn-eng/blast-radius">Code</a></div>
+    <div class="demo"><button class="demo-launch" data-src="https://rishikeshn-eng.github.io/blast-radius/" data-title="blast-radius live demo"><span class="ic">▶</span>Launch the live demo — runs the real analyzer in your browser</button></div>
+  </div>
+</article>
+
+<article>
+  <div class="num"><b>0</b><span>false positives on 500 real human bug-fixes — gold-set precision, recall and F1 all 1.00</span></div>
+  <div class="body">
+    <div class="top"><h2>rigged</h2><span class="pill done">Complete</span></div>
+    <div class="area">Reward hacking · evaluation integrity</div>
+    <p class="q">Did the agent fix the bug, or just delete the test?</p>
+    <p class="find">Parses a patch diff, separates test changes from source changes, and scores the tells of test-gaming: deleted assertions, added skips, <code>assert True</code>, edited expected values, hard-coded return values, pytest-harness tampering. Precision, recall and F1 are all 1.00 on a 34-case gold set, with 0 false positives on 500 real SWE-bench human fixes. Across 6,052 real agent patches, 12.1% touch tests and 4.5% of those game them — including agents that deleted the failing test and were still marked SOLVED.</p>
+    <details><summary>Limitations</summary><ul><li>The signals are heuristic, not proof of intent: a legitimate refactor that genuinely retires an obsolete test can look suspicious, so it flags for review rather than auto-rejecting.</li><li>Coverage is strongest for Python/pytest patches; other test frameworks are detected more coarsely.</li></ul></details>
+    <div class="links"><a href="https://rishikeshn-eng.github.io/rigged/">Live demo</a><a href="https://github.com/rishikeshn-eng/rigged">Code</a></div>
+    <div class="demo"><button class="demo-launch" data-src="https://rishikeshn-eng.github.io/rigged/" data-title="rigged live demo"><span class="ic">▶</span>Launch the live demo — runs the real detector in your browser</button></div>
+  </div>
+</article>
+
+<article>
+  <div class="num"><b>0</b><span>critical false positives across 206,448 real sentences in 204 languages, at 100% attack recall</span></div>
+  <div class="body">
+    <div class="top"><h2>invisible-ink</h2><span class="pill done">Complete</span></div>
+    <div class="area">Agent security · prompt injection</div>
+    <p class="q">Is there text in this input that a human reviewer literally cannot see?</p>
+    <p class="find">Detects, decodes and strips Unicode smuggling — tag-character ASCII payloads, bidi / Trojan-Source overrides, variation-selector byte payloads, zero-width runs, homoglyph spoofs — deciding in script context so real Arabic, Hindi, Thai, CJK and emoji survive untouched. The character-class tables are generated straight from the Unicode Character Database. Calibrated on FLORES-200: 0 critical false positives across 206,448 professionally-translated sentences in 204 languages, at 100% recall on every documented attack vector and byte-for-byte recovery of the hidden payload.</p>
+    <details><summary>Limitations</summary><ul><li>It detects known smuggling techniques — a genuinely novel encoding could evade it — and is a defence-in-depth layer, not a guarantee.</li><li>The confusables signal is inherently heuristic on mixed-script text, so a Cyrillic letter inside a Latin word is a warning, never a hard block. It reasons about characters, not meaning.</li></ul></details>
+    <div class="links"><a href="https://rishikeshn-eng.github.io/invisible-ink/">Live demo</a><a href="https://github.com/rishikeshn-eng/invisible-ink">Code</a></div>
+    <div class="demo"><button class="demo-launch" data-src="https://rishikeshn-eng.github.io/invisible-ink/" data-title="invisible-ink live demo"><span class="ic">▶</span>Launch the live demo — runs the real scanner in your browser</button></div>
+  </div>
+</article>
+
 </section>
 
+<script>
+document.querySelectorAll('.demo-launch').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    var src=btn.getAttribute('data-src');
+    var title=btn.getAttribute('data-title')||'live demo';
+    var host=src.replace(/^https?:\/\//,'').replace(/\/$/,'');
+    var frame=document.createElement('div');
+    frame.className='demo-frame';
+    var bar=document.createElement('div'); bar.className='demo-bar';
+    bar.innerHTML='<span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="u">'+host+'</span>';
+    var open=document.createElement('a'); open.className='open'; open.href=src; open.target='_blank'; open.rel='noopener'; open.textContent='open in new tab ↗';
+    bar.appendChild(open);
+    var ifr=document.createElement('iframe'); ifr.src=src; ifr.title=title; ifr.loading='lazy';
+    frame.appendChild(bar); frame.appendChild(ifr);
+    (btn.closest('.demo')||btn).replaceWith(frame);
+  });
+});
+</script>
+
 <footer>
-  <p>Problems were chosen from Coefficient Giving's Project Tailwind priority areas (CoT monitorability, evidence generation, supply-chain security), community open-problem lists for evals, and practitioner reports of agent prompt injection.</p>
+  <p>Problems were chosen from Coefficient Giving's Project Tailwind priority areas (CoT monitorability, evidence generation, supply-chain security), community open-problem lists for evals, and practitioner reports of agent prompt injection, tool-call safety, and reward hacking.</p>
   <p>Every repository has a one-command reproduce script and states its cuts in its README.</p>
 </footer>
 </div>
